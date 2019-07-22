@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django-environ = "==0.4.5"
+django-braces = "==1.13.0"
+django-crispy-forms = "==1.7.2"
+django-authtools = "==1.6.0"
+easy-thumbnails = "==2.5"
+pytz = "==2018.7"
+django-debug-toolbar = "==1.10.1"
+sqlparse = "==0.2.4"
+Django = "==2.0.9"
+Pillow = "==5.3.0"
+Werkzeug = "==0.14.1"
+rest-framework = "*"
+postmen = "*"
+requests = "*"
+
+[dev-packages]
+django-debug-toolbar = ">=1.8"
+Werkzeug = ">=0.12.2"
+
+[requires]
+python_version = "3"
