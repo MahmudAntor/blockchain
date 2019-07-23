@@ -10,11 +10,13 @@ def localmanagement(request):
     if request.user.is_authenticated:
 
         devices = Device.objects.all()
+        block = Block.objects.latest('id')
         for device in devices:
-            transaction = Transactions.objects.filter(device=device).latest()
-            print(transaction)
-            device.status = transaction.device_status
-            device.save()
+            if block.transactions.count():
+                transaction = Transactions.objects.filter(device=device).latest()
+                print(transaction)
+                device.status = transaction.device_status
+                device.save()
 
         context = {
             'devices': devices,

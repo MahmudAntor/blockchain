@@ -11,6 +11,9 @@ from device.serializers import DevSerializer, MinSerializer
 import requests
 from local.models import *
 from django.contrib import messages
+import random
+import string
+
 
 
 def cripto_connect(request):
@@ -70,6 +73,7 @@ def alter(request, id):
             action = PolicyHeader.ALLOW,
         )
         true = policy in block.policy_header.all()
+        print(true)
 
     except:
 
@@ -77,6 +81,12 @@ def alter(request, id):
         return HttpResponseRedirect(reverse('local:local'))
 
     else:
+
+        if not true:
+            messages.warning(request, 'You don\'t have Permission to add this transaction')
+            return HttpResponseRedirect(reverse('local:local'))
+
+
         p_transaction = Transactions.objects.filter(device=device).latest()
         if p_transaction.device_status == True:
             transaction = Transactions(
@@ -95,6 +105,22 @@ def alter(request, id):
                 device_status=True,
             )
         transaction.save()
+        if block.transactions.count() >= 5:
+            def random_char(y):
+                return ''.join(random.choice(string.ascii_lowercase) for x in range(y))
+
+            header = BlockHeader(hash = random_char(20))
+            header.save()
+
+            new_block = Block(
+                block_header = header,
+                prev_block = block,
+            )
+            new_block.save()
+            for p in block.policy_header.all():
+                new_block.policy_header.add(p)
+                new_block.save()
+
         block.transactions.add(transaction)
 
         return HttpResponseRedirect(reverse('local:local'))

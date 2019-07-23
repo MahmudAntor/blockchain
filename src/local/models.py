@@ -45,7 +45,6 @@ class Transactions(models.Model):
     )
     prev_transaction = models.ForeignKey('self', on_delete=models.CASCADE ,blank=True, null=True)
     transaction_number = models.IntegerField()
-    block_transaction_number = models.IntegerField(null=True, blank=True)
     device = models.ForeignKey(Device, on_delete=models.CASCADE, blank=True, null=True)
     transaction_type = models.PositiveSmallIntegerField(choices=ACTION_TYPES)
     device_status = models.BooleanField(default=False)
@@ -54,6 +53,7 @@ class Transactions(models.Model):
         get_latest_by = "transaction_number"
 
 class Block(models.Model):
+    prev_block = models.ForeignKey('self', on_delete=models.CASCADE ,blank=True, null=True)
     block_header = models.ForeignKey(BlockHeader, on_delete=models.CASCADE)
     policy_header = models.ManyToManyField(PolicyHeader, blank=True)
     transactions = models.ManyToManyField(Transactions, blank=True)
