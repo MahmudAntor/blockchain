@@ -33,6 +33,7 @@ def cripto_detail(request, pk):
     device.save()
     med = DH_Endpoint(device.public_key, 19, device.private_key)
     device.dh_key = med.generate_full_key(device.partial)
+    print(device.dh_key)
     device.save()
 
     return Response(serializer.data)
