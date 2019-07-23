@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from device.models import Device, Miner
-from device.serializers import DevSerializer, MinSerializer
+from device.serializers import DevSerializer, MinSerializer, GlobSerializer
 import requests
 from local.models import *
 from django.contrib import messages
@@ -135,4 +135,18 @@ def partial(request, pk):
     miner.save()
     print(miner.partial)
     serializer = MinSerializer(miner)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def return_global(request, hash):
+    num = BlockHeader.objects.all().count()
+    print (num)
+    print (hash)
+    try:
+        glo = BlockHeader.objects.all().order_by('-id')[:(num-hash)]
+    except glo.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    serializer = GlobSerializer(glo, many=True)
     return Response(serializer.data)

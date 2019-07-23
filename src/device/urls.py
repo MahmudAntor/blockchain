@@ -8,7 +8,8 @@ app_name = "device"
 urlpatterns = [
     path('partial/<int:pk>', views.partial),
     path('', views.cripto_connect, name="connect"),
-    path('<int:id>/alter', views.alter, name='alter')
+    path('<int:id>/alter', views.alter, name='alter'),
+    path('global/<int:hash>', views.return_global),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
