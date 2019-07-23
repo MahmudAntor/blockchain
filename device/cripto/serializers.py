@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Self
+from .models import Self, GlobalChain
 
 
 class SelfSerializer(serializers.ModelSerializer):
@@ -11,3 +11,9 @@ class PartialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Self
         fields = ['partial']
+
+
+class GlobalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GlobalChain
+        fields = ['hash']

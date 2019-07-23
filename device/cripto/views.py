@@ -5,9 +5,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from cripto.models import Self, Miner
+from cripto.models import Self, Miner, GlobalChain, Hash
 from cripto.serializers import SelfSerializer, PartialSerializer
 import requests
+import string
 
 
 
@@ -40,3 +41,20 @@ def cripto_detail(request, pk):
 
 
 
+def global_call(request):
+    hash = Hash.objects.all().count()
+    glob = GlobalChain.objects.latest('id')
+    glob_var = requests.get('http://127.0.0.1:8000/device/global/' + str(hash))
+    
+    var = glob_var.json()
+    for v in var:
+        print(v)
+        if(v['hash'] == 'dummy'):
+            break
+
+        hash = Hash(hash = v['hash'])
+        hash.save()
+        glob.hashchain.add(hash)
+        glob.save()   
+
+    return HttpResponseRedirect('http://127.0.0.1:8000')
