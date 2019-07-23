@@ -9,6 +9,8 @@ from rest_framework.response import Response
 from device.models import Device, Miner
 from device.serializers import DevSerializer, MinSerializer
 import requests
+from local.models import *
+from django.contrib import messages
 
 
 def cripto_connect(request):
@@ -25,11 +27,38 @@ def cripto_connect(request):
     device.save()
     miner =  Miner.objects.get(public_key = 19)
     med = DH_Endpoint(miner.public_key, p_key, miner.private_key)
-    device.dh_key = med.generate_full_key(device.partial)
-    device.save()
 
-    print(context)
-    return HttpResponseRedirect(reverse('home'))
+
+    # add genesis block
+    block = Block.objects.latest('id')
+    print(block)
+    try:
+        policy = PolicyHeader.objects.get(
+            requester = request.user,
+            requested_action = PolicyHeader.GENESIS,
+            device = device,
+            action = PolicyHeader.ALLOW,
+        )
+        true = policy in block.policy_header.all()
+
+    except:
+
+        messages.warning(request, 'You don\'t have Permission to add this transaction')
+        return HttpResponseRedirect(reverse('local:local'))
+
+    else:
+
+        device.dh_key = med.generate_full_key(device.partial)
+        device.save()
+        transaction = Transactions(
+            transaction_number = 1,
+            device = device,
+            transaction_type = Transactions.GENESIS,
+        )
+        transaction.save()
+        block.transactions.add(transaction)
+
+        return HttpResponseRedirect(reverse('local:local'))
 
 
 @api_view(['GET'])

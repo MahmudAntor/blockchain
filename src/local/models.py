@@ -19,10 +19,16 @@ class PolicyHeader(models.Model):
         (MONITOR, 'Monitor'),
         (REMOVE, 'Remove'),
     )
+    ALLOW = 1
+    DENY = 2
+    ACTION = (
+        (ALLOW, 'Allow'),
+        (DENY, 'Deny'),
+    )
     requester = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    requested_action = models.CharField(max_length=100)
+    requested_action = models.PositiveSmallIntegerField(choices=ACTION_TYPES)
     device = models.ForeignKey(Device, on_delete=models.CASCADE, blank=True, null=True)
-    action = models.PositiveSmallIntegerField(choices=ACTION_TYPES)
+    action = models.PositiveSmallIntegerField(choices=ACTION)
 
 class Transactions(models.Model):
     GENESIS = 1
@@ -43,9 +49,9 @@ class Transactions(models.Model):
     transaction_type = models.PositiveSmallIntegerField(choices=ACTION_TYPES)
 
 class Block(models.Model):
-    Block_header = models.ForeignKey(BlockHeader, on_delete=models.CASCADE)
-    Policy_header = models.ForeignKey(PolicyHeader, on_delete=models.CASCADE)
-    Transactions = models.ManyToManyField(Transactions)
+    block_header = models.ForeignKey(BlockHeader, on_delete=models.CASCADE)
+    policy_header = models.ManyToManyField(PolicyHeader, blank=True)
+    transactions = models.ManyToManyField(Transactions, blank=True)
 
 class BlockChain(models.Model):
-    Block_chain = models.ManyToManyField(Block)
+    block_chain = models.ManyToManyField(Block)
