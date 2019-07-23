@@ -16,8 +16,6 @@ from django.contrib import messages
 def cripto_connect(request):
     p_key = 7919
     device = Device.objects.get(public_key = p_key)
-    # serializer = DevSerializer(device)
-    # payload = {'key1': serializer.data}
     content = requests.get('http://127.0.0.1:8002/cripto/19')
     gdata = content.json()
     context = {
@@ -59,6 +57,48 @@ def cripto_connect(request):
         block.transactions.add(transaction)
 
         return HttpResponseRedirect(reverse('local:local'))
+
+
+def alter(request, id):
+    device = Device.objects.get(pk=id)
+    block = Block.objects.latest('id')
+    try:
+        policy = PolicyHeader.objects.get(
+            requester = request.user,
+            requested_action = PolicyHeader.STORE,
+            device = device,
+            action = PolicyHeader.ALLOW,
+        )
+        true = policy in block.policy_header.all()
+
+    except:
+
+        messages.warning(request, 'You don\'t have Permission to add this transaction')
+        return HttpResponseRedirect(reverse('local:local'))
+
+    else:
+        p_transaction = Transactions.objects.filter(device=device).latest()
+        if p_transaction.device_status == True:
+            transaction = Transactions(
+                prev_transaction = p_transaction,
+                transaction_number = p_transaction.transaction_number+1,
+                device = device,
+                transaction_type = Transactions.STORE,
+                device_status = False,
+            )
+        else:
+            transaction = Transactions(
+                prev_transaction=p_transaction,
+                transaction_number=p_transaction.transaction_number + 1,
+                device=device,
+                transaction_type=Transactions.STORE,
+                device_status=True,
+            )
+        transaction.save()
+        block.transactions.add(transaction)
+
+        return HttpResponseRedirect(reverse('local:local'))
+
 
 
 @api_view(['GET'])

@@ -43,10 +43,15 @@ class Transactions(models.Model):
         (MONITOR, 'Monitor'),
         (REMOVE, 'Remove'),
     )
-    prev_transaction = models.ForeignKey('self', on_delete=models.PROTECT ,blank=True, null=True)
+    prev_transaction = models.ForeignKey('self', on_delete=models.CASCADE ,blank=True, null=True)
     transaction_number = models.IntegerField()
+    block_transaction_number = models.IntegerField(null=True, blank=True)
     device = models.ForeignKey(Device, on_delete=models.CASCADE, blank=True, null=True)
     transaction_type = models.PositiveSmallIntegerField(choices=ACTION_TYPES)
+    device_status = models.BooleanField(default=False)
+
+    class Meta:
+        get_latest_by = "transaction_number"
 
 class Block(models.Model):
     block_header = models.ForeignKey(BlockHeader, on_delete=models.CASCADE)

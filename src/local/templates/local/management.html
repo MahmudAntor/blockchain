@@ -80,19 +80,18 @@ body {font-family: Arial, Helvetica, sans-serif;}
     <div class="column">
 
       <div class="card">
-          <form method="GET" action="#">
-            {% csrf_token %}
-            <h3>Fan 1</h3>
-            {% if d.dh_key %}
-              <a class="btn btn-warning" href="#" role="button">Activated</a>
+          {% csrf_token %}
+          <h3>Fan 1</h3>
+          {% if d.dh_key %}
+            <a class="btn btn-warning" href="#" role="button">Activated</a>
 
-            {% else %}
-              <a class="btn btn-primary" href="{% url 'device:connect' %}" role="button">Activate Device</a>
-
-            {% endif %}
-            <p>Status -> </p>
-            <button type="submit" name="status" value="Submit">Change Status</button>
-          </form>
+          {% else %}
+            <a class="btn btn-primary" href="{% url 'device:connect' %}" role="button">Activate Device</a>
+          {% endif %}
+          <br>
+          <br>
+          <p>Status -> {{d.status}}</p>
+          <a class="btn btn-primary" href="{% url 'device:alter' id=d.id %}">Change Status</a>
 
       </div>
     </div>
